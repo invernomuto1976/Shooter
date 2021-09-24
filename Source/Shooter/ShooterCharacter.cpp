@@ -38,10 +38,42 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 }
 
+// Called for forward / backward input
+void AShooterCharacter::MoveForward(float Value)
+{
+	if (Controller && (Value != 0.0f))
+	{
+		const FRotator Rotation{ Controller->GetControlRotation() };
+		const FRotator YawRotation{ 0.f, Rotation.Yaw, 0.f };
+
+		const FVector Direction{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) };
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
+// Called for side to side input
+void AShooterCharacter::MoveRight(float Value)
+{
+	if (Controller && (Value != 0.0f))
+	{
+		const FRotator Rotation{ Controller->GetControlRotation() };
+		const FRotator YawRotation{ 0.f, Rotation.Yaw, 0.f };
+
+		const FVector Direction{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) };
+
+		AddMovementInput(Direction, Value);
+	}
+}
+
 // Called to bind functionality to input
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AShooterCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AShooterCharacter::MoveRight);
 }
 
